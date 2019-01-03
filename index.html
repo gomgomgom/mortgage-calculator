@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="assets/css/style.css">
+
+    <title>Mortgage Calculator</title>
+  </head>
+  <body>
+
+    <div class="container">
+      <h1>Mortgage Calculator</h1>
+      <hr class="my-4">
+
+      <!-- Your message here -->
+      <div class="alert alert-danger" id="top-alert" role="alert" style="display: none;">
+        A simple danger alert—check it out!
+      </div>
+      <br/>
+
+      <form>
+        <div class="form-group row">
+          <label class="col-sm-2">Property Price</label>
+          <div class="col-sm-10 input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text">$</span>
+            </div>
+            <input type="text" class="form-control" id="txt-property-price" value="1000000000">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-2">Down Payment</label>
+          <div class="col-sm-10 input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text">$</span>
+            </div>
+            <input type="text" class="form-control" id="txt-down-payment" value="300000000">
+          </div>
+        </div>
+        <div class="form-group row" id="container-loan-amount" style="display: none;">
+          <label class="col-sm-2">Loan Amount</label>
+          <div class="col-sm-10 input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text">$</span>
+            </div>
+            <input type="text" disabled class="form-control" id="txt-loan-amount" value="0">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-2"></label>
+          <div class="col-sm-10 input-group mb-3">
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+              <label class="btn btn-primary active btn-option-tenor" id="btn-option-one-tenor">
+                <input type="radio" name="options" class="btn-option-tenor" autocomplete="off" checked> One Period
+              </label>
+              <label class="btn btn-light btn-option-tenor" id="btn-option-multi-tenor">
+                <input type="radio" name="options" class="btn-option-tenor" autocomplete="off"> Multi Period (Comparison)
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-2">Period Time</label>
+          <div class="col-sm-10 input-group mb-3">
+            <select class="custom-select" id="cbo-tenor">
+              <option selected>Choose...</option>
+              <option value="5">5</option>
+              <option value="10" selected>10</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
+              <option value="25">25</option>
+            </select>
+            <div class="input-group-append">
+              <label class="input-group-text">Years</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-2"></label>
+          <div class="col-sm-10 input-group mb-3">
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+              <label class="btn btn-primary active btn-rate-method" id="btn-rate-method-flat">
+                <input type="radio" name="options" autocomplete="off" checked> Flat / Fixed
+              </label>
+              <label class="btn btn-light btn-rate-method" id="btn-rate-method-effective">
+                <input type="radio" name="options" autocomplete="off"> Effective
+              </label>
+              <label class="btn btn-light btn-rate-method" id="btn-rate-method-annuity">
+                <input type="radio" name="options" autocomplete="off"> Annuity
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-2">Interest Rate</label>
+          <div class="col-sm-10 input-group mb-3">
+            <select class="custom-select" id="cbo-rate">
+              <option data-fixed-period="3" value="3.00">3.00%</option>
+              <option data-fixed-period="5" value="5.00">5.00%</option>
+              <option data-fixed-period="5" value="7.50">7.50%</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-info" onclick="hitung()">Calculate</button>
+
+      </form>
+
+      <!-- list installments in here -->
+      <div id="installments" style="margin-top: 50px; display: none;"></div>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="assets/js/jquery-3.3.1.min.js"></script>
+    <script src="assets/js/popper.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/installment_table.js"></script>
+    <script src="assets/js/calculator.js"></script>
+    <script src="assets/js/main.js"></script>
+  </body>
+</html>

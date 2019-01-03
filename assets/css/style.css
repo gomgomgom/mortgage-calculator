@@ -1,0 +1,12 @@
+.btn-toggle {
+	border: 1px solid #777;
+	color: #999;
+}
+
+.btn-toggle.active {
+	color: #fff;
+}
+
+.hidden {
+	display: none;
+}
