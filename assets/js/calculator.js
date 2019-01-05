@@ -15,6 +15,9 @@ const calculator = {
     downPayment: 0, // in rupiah, minimum 15% of property price
     tenor: 0, // in year
 
+    isFixed: false,
+    isCombined: false,
+
     fixedRate: 0.0, // in percentage
     fixedPeriod: 0, // in year
 
@@ -33,11 +36,20 @@ const calculator = {
         this.downPayment = parseInt($('#txt-down-payment').val());
         this.tenor = parseInt($('#cbo-tenor').val());
 
-        this.fixedRate = parseInt($('#cbo-rate').val());
-        this.fixedPeriod = 3;
+        this.floatRate = 0;
+        this.floatPeriod = 0;
+        this.isFixed = this.isCombined = false;
+        if ($('#cbo-rate option:selected').attr('data-float-rate') != null) {
+            this.isCombined = true;
+            this.fixedPeriod = parseInt($('#cbo-rate option:selected').attr('data-fixed-period'));
+            this.floatRate = parseFloat($('#cbo-rate option:selected').attr('data-float-rate'));
+            this.floatPeriod = this.tenor - this.fixedPeriod;
+        } else {
+            this.isFixed = true;
+            this.fixedPeriod = this.tenor;
+        }
 
-        this.floatRate = this.fixedRate;
-        this.floatPeriod = this.tenor - this.fixedPeriod;
+        this.fixedRate = parseFloat($('#cbo-rate').val());
     },
 
     /**
@@ -50,38 +62,57 @@ const calculator = {
         this.init();
 
         const totalMonths = this.tenor * 12;
-        const totalLoan = this.propertyPrice - this.downPayment;
+        const loanAmount = parseInt($('#txt-loan-amount').val());
 
-        // console.log("total loan :: "+ totalLoan);
+        var amountInterestFixedRate = 0;
+        var amountInterestFloatRate = 0;
 
-        const totalAmountInterestFixedRate = totalLoan * this.fixedRate/100 * this.fixedPeriod;
-        // const amountInterestFixedRatePerMonth = Math.ceil(totalInterestFixedRate / (this.fixedPeriod * 12)); // rounding up
-        // console.log("totalAmountInterestFixedRate :: "+ totalAmountInterestFixedRate);
+        var formula = "";
+        var formulaOptions = "";
+        if (this.isFixed) {
+            amountInterestFixedRate = Math.ceil(loanAmount * this.fixedRate/100 * this.fixedPeriod);
 
-        const totalAmountInterestFloatRate = Math.ceil(totalLoan * this.floatRate/100 * this.floatPeriod);
-        // const amountInterestFloatRatePerMonth = Math.ceil(totalInterestFloatRate / (this.floatPeriod * 12)); // rounding up
-        // console.log("totalAmountInterestFloatRate :: "+ totalAmountInterestFloatRate);
+            formula = db.formula.fixed;
+            formulaOptions = {
+                loan_amount: loanAmount,
+                rate: this.fixedRate,
+                period_time: this.tenor
+            };
+        } else {
+            amountInterestFixedRate = Math.ceil(loanAmount * this.fixedRate/100 * this.fixedPeriod);
+            amountInterestFloatRate = Math.ceil(loanAmount * this.floatRate/100 * this.floatPeriod);
 
-        const totalLoanComplete = totalLoan + totalAmountInterestFixedRate + totalAmountInterestFloatRate;
-        
+            formula = db.formula.combined;
+            formulaOptions = {
+                loan_amount: loanAmount,
+                fixed_rate: this.fixedRate,
+                fixed_period: this.fixedPeriod,
+                float_rate: this.floatRate,
+                period_time: this.tenor
+            };
+        }
 
-        // console.log("total months :: "+ totalMonths);
-        // console.log("total loan complete :: "+ totalLoanComplete);
+        var parser = new exprEval.Parser();
+        parser.consts = formulaOptions;
+        var installment = Math.ceil(parser.parse(formula).evaluate());
+        console.log("formula (installment) :: "+ parser.parse(formula).toString());
+        console.log("installment :: "+ installment);
 
-        const result = this.installments(totalMonths, totalLoanComplete);
-        // console.log(result[0]);
+        const totalLoanAmount = loanAmount + amountInterestFixedRate + amountInterestFloatRate;
+        const result = this.installments(installment, totalMonths, totalLoanAmount);
 
         return result;
+
     },
 
     installments: function (
+        installment,
         totalMonths,
         totalLoanComplete
     ) {
         const list = new Array();
         let totalInstallments = 0;
 
-        const installment = Math.ceil(totalLoanComplete / totalMonths);
         const principalInstallment = 0;
         const interestInstallment = 0;
 
@@ -113,15 +144,3 @@ const calculator = {
         return list;
     }
 };
-
-
-
-
-
-
-
-
-
-
-
-
